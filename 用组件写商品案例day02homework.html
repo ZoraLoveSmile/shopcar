@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+</head>
+<style>
+    * {
+        margin: 0;
+        padding: 0
+    }
+
+    img {
+        width: 50px;
+        height: 50px;
+    }
+
+    #app {
+        width: 600px;
+        min-height: 200px;
+
+        margin: 100px;
+    }
+
+    .head {
+        border: 2px solid skyblue;
+        margin-bottom: 10px;
+        padding: 10px;
+    }
+
+    .main {
+        border: 2px solid skyblue;
+        margin-bottom: 10px;
+        padding: 10px;
+    }
+
+    table {
+        border: 2px solid slateblue;
+        width: 100%;
+        border-collapse: collapse;
+        text-align: center;
+    }
+
+    thead {
+        color: #fff;
+        font-size: 18px;
+        font-weight: 800;
+        background-color: rgb(47, 110, 173);
+    }
+
+    thead>tr>td {
+        padding: 4px;
+    }
+
+    td {
+        border: 2px solid skyblue;
+        margin-bottom: 6px;
+
+    }
+
+    button {
+        padding: 4px;
+    }
+
+    span {
+        width: 20px;
+        height: 20px;
+        background-color: #eee;
+        display: inline-block;
+    }
+
+    strong {
+        margin: 0 4px;
+    }
+
+    .mm {
+        text-align: center;
+    }
+</style>
+
+<body>
+    <div id="app">
+        <bro1></bro1>
+        <bro2></bro2>
+        <bro3></bro3>
+    </div>
+</body>
+
+</html>
+<!-- bro1 -->
+<template id="bro1">
+    <div class="head">
+        编号：<input type="text" v-model="obj.msg1">品牌名称：<input type="text" v-model="obj.msg2">
+        <br>
+        产品图片地址：<input type="text" v-model="obj.msg3">价格：<input type="text" v-model="obj.msg4">
+        <button @click="handle">添加</button>
+    </div>
+</template>
+
+
+<!-- bro2 -->
+<template id="bro2">
+    <div class="main">
+        品牌名称:<input placeholder="请输入搜索条件"></input>
+    </div>
+</template>
+
+
+<!-- bro3 -->
+<template id="bro3">
+    <div>
+        <table>
+            <thead>
+                <tr>
+                    <td>
+                        全选<input type="checkbox">
+                        反选<input type="checkbox">
+                    </td>
+                    <td>产品图片</td>
+                    <td>编号</td>
+                    <td>品牌名称</td>
+                    <td>价格</td>
+                    <td>数量</td>
+                    <td>操作</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(item,index) in arr" :key="item.hma">
+                    <td><input type="checkbox" v-model="nullarr" :value="item" @click=""></td>
+                    <td><img :src="item.img"></td>
+                    <td>{{item.hma}}</td>
+                    <td>{{item.proName}}</td>
+                    <td>{{item.proPrice}}</td>
+                    <td>
+                        <span @click="minus(index)">-</span>
+                        <strong>{{item.count}}</strong>
+                        <span @click="plus(index)">+</span>
+                    </td>
+
+                    <td><button @click="delet(index)">删除</button></td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th style=" border:2px solid skyblue;">总价</th>
+                    <th colspan="6"></th>
+                </tr>
+            </tfoot>
+        </table>
+        <div class="mm">没有更多数据了</div>
+    </div>
+</template>
+<script src="../../../vue.min.js"></script>
+<script>
+    let eventBus = new Vue
+    //bro1
+    Vue.component('bro1', {
+        template: '#bro1',
+        data() {
+            return {
+                obj: {
+                    msg1: "",
+                    msg2: "",
+                    msg3: "",
+                    msg4: "",
+                }
+            }
+        },
+        methods:{
+            handle(){
+                //传递给bro3组件的信息
+                console.log(this.obj);
+                eventBus.$emit('receive',this.obj)
+            }
+        }
+    })
+    //bro2
+    Vue.component('bro2', {
+        template: '#bro2',
+        data() {
+            return {
+                mes: ""
+            }
+        }
+    })
+    //bro3
+    Vue.component('bro3', {
+        template: '#bro3',
+        //钩子函数，用于订阅兄弟组件的信息，组件挂载后调用，属于订阅者
+        mounted(){
+            //注册自定义事件
+            eventBus.$on('receive',input=>{
+                console.log(input);
+                
+                this.arr.push({
+                    img:`./rjl/${input.msg3}.jpg`,
+                    proName:input.msg2,
+                    hma:input.msg1,
+                    proPrice:input.msg4,
+                    count:1,
+                    val:false
+                })
+            })
+        },
+        data() {
+            return {
+                arr: [
+                    {
+                        img: "./rjl/3.jpg",
+                        proName: "任嘉伦的铠甲",
+                        hma: 1,
+                        proPrice: "10",
+                        count: 1,
+                        val: false
+                    },
+                    {
+                        img: "./rjl/4.jpg",
+                        proName: "任嘉伦的头套",
+                        hma:2,
+                        proPrice: "2",
+                        count: 1,
+                        val: false
+                    },
+                    {
+                        img: "./rjl/5.jpg",
+                        proName: "任嘉伦的外套",
+                        hma: 3,
+                        proPrice: "5",
+                        count: 1,
+                        val: false
+
+                    }
+                ],
+                nullarr:[]
+            }
+        },
+      
+        methods: {
+            plus(index) {
+                this.arr[index].count += 1
+            },
+            minus(index) {
+                this.arr[index].count -=1
+                if(this.arr[index].count<=0){
+                    this.arr[index].count =0
+                }
+                
+            },
+            delet(index){
+                this.arr.splice(index,1)
+            }
+        },
+        watch:{
+            nullarr:{
+                handler(newVal,oldVal){
+                    console.log(newVal,oldVal);
+                },
+                deep: true, //深度侦听
+                immediate:true,
+            }
+           
+        },
+            
+    })
+    //root
+    let vm = new Vue({
+        el: "#app",
+        data: {
+
+        }
+    })
+</script>
